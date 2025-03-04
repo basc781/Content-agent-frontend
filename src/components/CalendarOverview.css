@@ -1,0 +1,98 @@
+.calendar-overview {
+  padding: 32px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.calendar-overview table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 20px;
+}
+
+.calendar-overview th {
+  background-color: #f8fafc;
+  color: #4a5568;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 16px;
+  border-bottom: 2px solid #e2e8f0;
+  vertical-align: top;
+}
+
+.calendar-overview td {
+  padding: 16px;
+  color: #1a202c;
+  border-bottom: 1px solid #edf2f7;
+  font-size: 14px;
+  vertical-align: top;
+}
+
+.calendar-overview tr:hover td {
+  background-color: #f8fafc;
+}
+
+.status-badge {
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.status-published {
+  background-color: #C6F6D5;
+  color: #2F855A;
+}
+
+.status-draft {
+  background-color: #FED7D7;
+  color: #C53030;
+}
+
+.status-scheduled {
+  background-color: #FEEBC8;
+  color: #B7791F;
+}
+
+.status-badge.status-writing\.\.\.\. {
+  background-color: #EBF8FF;
+  color: #3182CE;
+}
+
+.no-article {
+  color: #A0AEC0;
+  font-style: italic;
+  font-size: 13px;
+}
+
+.refresh-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-article-link {
+  display: inline-block;
+  padding: 6px 12px;
+  background-color: #EBF8FF;
+  color: #3182CE;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.view-article-link:hover {
+  background-color: #BEE3F8;
+  transform: translateY(-1px);
+}

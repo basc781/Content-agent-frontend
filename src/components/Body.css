@@ -1,0 +1,9 @@
+.body-container {
+  max-width: 1155px;
+  margin: 0 auto;
+  background-color: white;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Optionele subtiele schaduw */
+  border-radius: 4px; /* Optionele afgeronde hoeken */
+  margin-top: 2rem;
+} 

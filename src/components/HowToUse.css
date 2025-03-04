@@ -1,0 +1,169 @@
+.how-to-use {
+  margin-bottom: 60px;
+  padding: 60px 40px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.how-to-use-header {
+  text-align: center;
+  margin-bottom: 60px;
+}
+
+.how-to-use-header h2 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #2D3748;
+  margin: 0px;
+}
+
+.how-to-use-header p {
+  font-size: 18px;
+  color: #718096;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.steps-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto 50px;
+  flex-wrap: wrap;
+}
+
+.step {
+  flex: 1;
+  min-width: 220px;
+  max-width: 280px;
+  padding: 30px 20px;
+  background-color: #F7FAFC;
+  border-radius: 12px;
+  text-align: center;
+  position: relative;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  z-index: 1;
+}
+
+.step:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
+}
+
+.step-number {
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 30px;
+  background-color: #3182CE;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.step-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70px;
+  height: 70px;
+  background-color: #EBF8FF;
+  color: #3182CE;
+  font-size: 28px;
+  border-radius: 50%;
+  margin: 0 auto 20px;
+}
+
+.step h3 {
+  font-size: 18px;
+  color: #2D3748;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+
+.step p {
+  font-size: 14px;
+  color: #718096;
+  line-height: 1.6;
+}
+
+.step-connector {
+  flex: 0 0 40px;
+  height: 2px;
+  background: linear-gradient(90deg, #E2E8F0 0%, #3182CE 50%, #E2E8F0 100%);
+  position: relative;
+  z-index: 0;
+}
+
+.step-connector::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background-color: #3182CE;
+  border-radius: 50%;
+}
+
+.cta-container {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.cta-button {
+  padding: 14px 32px;
+  background-color: #3182CE;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 6px rgba(49, 130, 206, 0.2);
+}
+
+.cta-button:hover {
+  background-color: #2C5282;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(49, 130, 206, 0.3);
+}
+
+@media (max-width: 1100px) {
+  .steps-container {
+    justify-content: center;
+    gap: 40px;
+  }
+  
+  .step-connector {
+    display: none;
+  }
+  
+  .step {
+    margin-bottom: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .how-to-use {
+    padding: 40px 20px;
+  }
+  
+  .how-to-use-header h2 {
+    font-size: 28px;
+  }
+  
+  .step {
+    min-width: 100%;
+  }
+} 

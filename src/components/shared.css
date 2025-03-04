@@ -1,0 +1,17 @@
+.component-header {
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.component-header h2 {
+  font-size: 24px;
+  font-weight: 600;
+  color: #2D3748;
+  margin-bottom: 8px;
+}
+
+.component-header p {
+  font-size: 16px;
+  color: #718096;
+  margin: 0;
+} 

@@ -1,0 +1,45 @@
+.top-bar {
+  width: 100vw;
+  position: relative;
+  margin-left: calc(-50vw + 50%);
+  margin-right: calc(-50vw + 50%);
+  margin-top: -2rem;
+}
+
+.top-bar.top-image {
+  background-position: top center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.top-bar.large-image {
+  height: 400px; /* Verhoogd van 300px naar 400px */
+}
+
+.top-bar .background {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  position: absolute;
+  top: 0;
+}
+
+.top-bar .wrap {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: absolute;
+  bottom: 30px; /* Verlaagd van 40px naar 30px */
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0 20px;
+}
+
+.top-bar h1 {
+  color: white;
+  margin: 0;
+  font-size: 1.8em; /* Verkleind van 2em naar 1.8em */
+  padding: 20px 0;
+  border-top: 2px solid rgba(255, 255, 255, 0.7);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.7);
+} 
