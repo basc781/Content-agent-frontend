@@ -9,8 +9,31 @@ interface ArticleContentProps {
 
 function ArticleContent({ article }: ArticleContentProps) {
   if (!article) {
+    console.log('No article provided');
     return <div>No article data available</div>;
   }
+
+  console.log('Article received:', article);
+  console.log('Article text type:', typeof article.text);
+  console.log('Article text content:', article.text);
+
+  const renderJsonContent = (jsonText: string) => {
+    try {
+      const parsedData = JSON.parse(jsonText);
+      console.log('Successfully parsed JSON:', parsedData);
+      return (
+        <JsonEditor 
+          data={parsedData}
+          viewOnly={true}
+          collapse={true}
+        />
+      );
+    } catch (error) {
+      console.error('JSON Parse Error:', error);
+      console.log('Raw text that failed to parse:', jsonText.substring(0, 100) + '...');
+      return <div>Error parsing JSON content</div>;
+    }
+  };
 
   return (
     <div className="article-content">
@@ -27,15 +50,10 @@ function ArticleContent({ article }: ArticleContentProps) {
         </div>
       </div>
       <div className="article-body">
-        {article.outputFormat === "json" ? (
-          <JsonEditor 
-            data={JSON.parse(article.text)}
-            viewOnly={true}
-            collapse={true}
-          />
-        ) : (
-          <ReactMarkdown>{article.text || ''}</ReactMarkdown>
-        )}
+        {article.outputFormat === "json" 
+          ? renderJsonContent(article.text)
+          : <ReactMarkdown>{article.text || ''}</ReactMarkdown>
+        }
       </div>
     </div>
   );

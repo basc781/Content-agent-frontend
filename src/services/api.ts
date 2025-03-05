@@ -51,7 +51,7 @@ export const generateArticle = async (formData: any, userId: string) => {
     
     console.log("Sending data to API:", { formData: combinedFormData, website, imageUrls, userId });
     
-    const response = await fetch(`${import.meta.env.GENERATE_ARTICLE_API_URL}`, {
+    const response = await fetch(`${import.meta.env.VITE_GENERATE_ARTICLE_API_URL}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -80,7 +80,7 @@ export const generateArticle = async (formData: any, userId: string) => {
 
 export const validateFormData = async (formData: any, userId: string): Promise<ValidationResponse> => {
   console.log("User ID being sent:", userId);
-  const response = await fetch(`${import.meta.env.VALIDATE_FORM_DATA_API_URL}`, {
+  const response = await fetch(`${import.meta.env.VITE_VALIDATE_FORM_DATA_API_URL}`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -97,7 +97,7 @@ export const validateFormData = async (formData: any, userId: string): Promise<V
 
 export const fetchArticles = async (userId: string): Promise<ArticlesResponse> => {
   try {
-    const response = await fetch(`${import.meta.env.FETCH_ARTICLES_API_URL}?userId=${userId}`);
+    const response = await fetch(`${import.meta.env.VITE_FETCH_ARTICLES_API_URL}?userId=${userId}`);
     if (!response.ok) throw new Error('Failed to fetch articles');
     const data: ArticlesResponse = await response.json();
     return data;

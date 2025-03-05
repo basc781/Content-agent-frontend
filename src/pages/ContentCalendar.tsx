@@ -6,6 +6,8 @@ import IdArticleGenerator from '../components/IdArticleGenerator';
 
 function ContentCalendar() {
   const {user} = useUser()
+  console.log("ContentCalendar rendering, user:", user);
+
   if (!user) {
     return <div>Please sign in to continue</div>
   }
@@ -19,10 +21,12 @@ function ContentCalendar() {
     case 'user_2to4iIK0DdzKaPJLbxXXJ0NMiLJ':
       form = <IdArticleGenerator />   
       table = <CalendarOverview />  
+      console.log("Rendering IdArticleGenerator and CalendarOverview");
       break
     case 'user_2tcq10lxmyCfQ69VBiX5NdAD8wc':
       form = <ArticleGenerator />
       table = <CalendarOverview />
+      console.log("Rendering ArticleGenerator and CalendarOverview");
       break
   }
 

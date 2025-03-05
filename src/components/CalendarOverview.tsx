@@ -24,6 +24,8 @@ interface ContentCalendarItem {
 }
 
 function CalendarOverview() {
+  console.log("CalendarOverview component mounting");
+
   const { user } = useUser();
   const userId = user?.id;
 
@@ -48,11 +50,14 @@ function CalendarOverview() {
   }, []);
 
   const loadArticles = async () => {
+    console.log("Starting to fetch articles");
     try {
       setIsRefreshing(true);
       const data = await fetchArticles(userId as string);
+      console.log("API Response:", data);
       setContentItems(data.publishedContentCalendarItems);
     } catch (err) {
+      console.error("Error fetching articles:", err instanceof Error ? err.message : 'An error occurred');
       setError(err instanceof Error ? err.message : 'An error occurred');
     } finally {
       setIsRefreshing(false);
