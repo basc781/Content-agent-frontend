@@ -18,12 +18,12 @@ function ContentCalendar() {
   let table = null
 
   switch (user.id) {
-    case 'user_2to4iIK0DdzKaPJLbxXXJ0NMiLJ':
+    case 'user_2tcq10lxmyCfQ69VBiX5NdAD8wc':
       form = <IdArticleGenerator />   
       table = <CalendarOverview />  
       console.log("Rendering IdArticleGenerator and CalendarOverview");
       break
-    case 'user_2tcq10lxmyCfQ69VBiX5NdAD8wc':
+    case 'user_2to4iIK0DdzKaPJLbxXXJ0NMiLJ':
       form = <ArticleGenerator />
       table = <CalendarOverview />
       console.log("Rendering ArticleGenerator and CalendarOverview");
