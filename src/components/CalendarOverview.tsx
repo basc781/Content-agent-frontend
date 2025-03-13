@@ -1,14 +1,14 @@
-import './CalendarOverview.css';
-import { useState, useEffect } from 'react';
-import { Article, fetchArticles } from '../services/api';
-import { FiRefreshCw } from 'react-icons/fi';
-import { Link } from 'react-router-dom';
-import { useUser } from '@clerk/clerk-react';
+import "./CalendarOverview.css";
+import { useState, useEffect } from "react";
+import { Article, fetchArticles } from "../services/api";
+import { FiRefreshCw } from "react-icons/fi";
+import { Link } from "react-router-dom";
+import { useUser } from "@clerk/clerk-react";
 
 // Nieuwe interface voor de aangepaste datastructuur
 interface ContentCalendarItem {
   id: number;
-  userId: string;
+  orgId: string;
   title: string;
   dateCreated: string;
   formData: {
@@ -23,42 +23,42 @@ interface ContentCalendarItem {
   articles: Article[];
 }
 
-function CalendarOverview() {
-  console.log("CalendarOverview component mounting");
-
-  const { user } = useUser();
-  const userId = user?.id;
-
-  if (!userId) {
-    return <div>Please sign in to continue</div>
-  }
-
+function CalendarOverview({ moduleId }: { moduleId: string }) {
   const [contentItems, setContentItems] = useState<ContentCalendarItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
     loadArticles();
-    
+
     //Set up automatic refresh every 10 seconds
     const refreshInterval = setInterval(() => {
       loadArticles();
-    }, 10000);
-    
+    }, 60000);
+
     // Clean up interval on component unmount
     return () => clearInterval(refreshInterval);
   }, []);
+
+  const { user } = useUser();
+  const userId = user?.id;
+
+  if (!userId) {
+    return <div>Please sign in to continue</div>;
+  }
 
   const loadArticles = async () => {
     console.log("Starting to fetch articles");
     try {
       setIsRefreshing(true);
-      const data = await fetchArticles(userId as string);
-      console.log("API Response:", data);
+      const data = await fetchArticles(moduleId);
       setContentItems(data.publishedContentCalendarItems);
     } catch (err) {
-      console.error("Error fetching articles:", err instanceof Error ? err.message : 'An error occurred');
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      console.error(
+        "Error fetching articles:",
+        err instanceof Error ? err.message : "An error occurred"
+      );
+      setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
       setIsRefreshing(false);
     }
@@ -77,26 +77,29 @@ function CalendarOverview() {
     if (!contentItem.articles || contentItem.articles.length === 0) {
       return null;
     }
-    
+
     // Sort articles by createdAt date (newest first)
-    const sortedArticles = [...contentItem.articles].sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    const sortedArticles = [...contentItem.articles].sort(
+      (a, b) =>
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
     );
-    
+
     return sortedArticles[0];
   };
 
   // Format date to a more readable format
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('nl-NL', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
+    return new Intl.DateTimeFormat("nl-NL", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
     }).format(date);
   };
+
+  console.log(contentItems);
 
   return (
     <div className="calendar-overview">
@@ -104,15 +107,15 @@ function CalendarOverview() {
         <h2>Content Calendar</h2>
         <p>View and manage all your scheduled and published content</p>
       </div>
-      
+
       <div className="calendar-header">
-        <button 
-          className={`refresh-button ${isRefreshing ? 'refreshing' : ''}`}
+        <button
+          className={`refresh-button ${isRefreshing ? "refreshing" : ""}`}
           onClick={handleRefresh}
           disabled={isRefreshing}
         >
           <FiRefreshCw className="refresh-icon" />
-           Refresh
+          Refresh
         </button>
       </div>
       <table>
@@ -126,21 +129,28 @@ function CalendarOverview() {
           </tr>
         </thead>
         <tbody>
-          {contentItems.map(item => {
+          {contentItems.map((item) => {
             const latestArticle = getLatestArticle(item);
             return (
               <tr key={item.id}>
                 <td>{item.title}</td>
                 <td>
-                  <span className={`status-badge status-${item.status.toLowerCase()}`}>
+                  <span
+                    className={`status-badge status-${item.status.toLowerCase()}`}
+                  >
                     {item.status}
                   </span>
                 </td>
-                <td>{item.dateCreated ? formatDate(item.dateCreated) : 'N/A'}</td>
-                <td>{item.formData.event || 'N/A'}</td>
+                <td>
+                  {item.dateCreated ? formatDate(item.dateCreated) : "N/A"}
+                </td>
+                <td>{item.formData.event || "N/A"}</td>
                 <td>
                   {latestArticle && latestArticle.pagepath ? (
-                    <Link to={`/article/${latestArticle.pagepath}`} className="view-article-link">
+                    <Link
+                      to={`/article/${latestArticle.pagepath}`}
+                      className="view-article-link"
+                    >
                       View Article
                     </Link>
                   ) : (
@@ -156,4 +166,4 @@ function CalendarOverview() {
   );
 }
 
-export default CalendarOverview; 
+export default CalendarOverview;

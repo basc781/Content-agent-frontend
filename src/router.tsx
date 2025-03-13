@@ -1,21 +1,24 @@
-import { createBrowserRouter } from 'react-router-dom';
-import ContentCalendar from './pages/ContentCalendar';
-import ContentDetail from './pages/ContentDetail';
-import App from './App';
-
+import { createBrowserRouter } from "react-router-dom";
+import ContentCalendar from "./pages/ContentCalendar";
+import ContentDetail from "./pages/ContentDetail";
+import App from "./App";
 
 export const router = createBrowserRouter([
   {
-    path: '/',
+    path: "/",
     element: <App />,
     children: [
       {
-        path: '/',
+        path: "/",
         element: <ContentCalendar />,
-        },
+      },
       {
-        path: '/article/:pagepath',
+        path: "/article/:pagepath",
         element: <ContentDetail />,
+      },
+      {
+        path: "/module/:slug",
+        element: <ContentCalendar />,
       },
     ],
   },

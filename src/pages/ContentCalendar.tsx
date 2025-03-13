@@ -1,43 +1,46 @@
-import './ContentCalendar.css';
-import CalendarOverview from '../components/CalendarOverview';
-import ArticleGenerator from '../components/ArticleGenerator';
-import {useUser} from '@clerk/clerk-react'
-import IdArticleGenerator from '../components/IdArticleGenerator';
+import "./ContentCalendar.css";
+import CalendarOverview from "../components/CalendarOverview";
+import ArticleGeneratorForm from "../components/ArticleGeneratorForm";
+import { useOrganization } from "@clerk/clerk-react";
+import { useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { getModule } from "../services/api";
+import { Module } from "../types/module";
 
 function ContentCalendar() {
-  const {user} = useUser()
-  console.log("ContentCalendar rendering, user:", user);
+  const { slug } = useParams<{ slug: string }>();
+  const { organization } = useOrganization();
 
-  if (!user) {
-    return <div>Please sign in to continue</div>
+  const [module, setModule] = useState<Module | null>(null);
+
+  useEffect(() => {
+    const fetchModule = async () => {
+      const module = await getModule(slug ?? "");
+      setModule(module);
+    };
+    fetchModule();
+  }, [slug]);
+
+  if (!slug) {
+    return <div>Please select a module to continue</div>;
   }
 
-  console.log("User ID being sent:", user.id);
+  if (!organization) {
+    return <div>Please select an organization to continue</div>;
+  }
 
-  let form = null
-  let table = null
-
-  switch (user.id) {
-    case 'user_2tcq10lxmyCfQ69VBiX5NdAD8wc':
-      form = <IdArticleGenerator />   
-      table = <CalendarOverview />  
-      console.log("Rendering IdArticleGenerator and CalendarOverview");
-      break
-    case 'user_2to4iIK0DdzKaPJLbxXXJ0NMiLJ':
-      form = <ArticleGenerator />
-      table = <CalendarOverview />
-      console.log("Rendering ArticleGenerator and CalendarOverview");
-      break
+  if (!module) {
+    return null;
   }
 
   return (
     <div>
       <div className="content-calendar-container">
         <div className="form-container">
-          {form}
+          <ArticleGeneratorForm module={module} />
         </div>
         <div className="table-container">
-          {table}
+          <CalendarOverview moduleId={module.id.toString()} />
         </div>
       </div>
     </div>
@@ -45,5 +48,3 @@ function ContentCalendar() {
 }
 
 export default ContentCalendar;
-
-
