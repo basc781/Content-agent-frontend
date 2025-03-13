@@ -28,6 +28,23 @@ function CalendarOverview({ moduleId }: { moduleId: string }) {
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const loadArticles = async () => {
+    console.log("Starting to fetch articles");
+    try {
+      setIsRefreshing(true);
+      const data = await fetchArticles(moduleId);
+      setContentItems(data.publishedContentCalendarItems);
+    } catch (err) {
+      console.error(
+        "Error fetching articles:",
+        err instanceof Error ? err.message : "An error occurred"
+      );
+      setError(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
+
   useEffect(() => {
     loadArticles();
 
@@ -46,23 +63,6 @@ function CalendarOverview({ moduleId }: { moduleId: string }) {
   if (!userId) {
     return <div>Please sign in to continue</div>;
   }
-
-  const loadArticles = async () => {
-    console.log("Starting to fetch articles");
-    try {
-      setIsRefreshing(true);
-      const data = await fetchArticles(moduleId);
-      setContentItems(data.publishedContentCalendarItems);
-    } catch (err) {
-      console.error(
-        "Error fetching articles:",
-        err instanceof Error ? err.message : "An error occurred"
-      );
-      setError(err instanceof Error ? err.message : "An error occurred");
-    } finally {
-      setIsRefreshing(false);
-    }
-  };
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
