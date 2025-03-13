@@ -14,6 +14,10 @@ export default defineConfig({
   preview: {
     port: 5173,
     host: true,
-    allowedHosts: ["content-agent.nl", "www.content-agent.nl"],
+    allowedHosts: [
+      "content-agent.nl",
+      "www.content-agent.nl",
+      "content-agent-beta.trezma.com",
+    ],
   },
 });
