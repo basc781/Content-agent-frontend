@@ -1,36 +1,33 @@
-import './ArticleContent.css';
-import { Article } from '../services/api';
-import ReactMarkdown from 'react-markdown';
-import { JsonEditor } from 'json-edit-react';
+import "./ArticleContent.css";
+import { RenderArticle } from "../services/api";
+import ReactMarkdown from "react-markdown";
+import { JsonEditor } from "json-edit-react";
 
 interface ArticleContentProps {
-  article: Article;
+  article: RenderArticle;
 }
 
 function ArticleContent({ article }: ArticleContentProps) {
   if (!article) {
-    console.log('No article provided');
+    console.log("No article provided");
     return <div>No article data available</div>;
   }
 
-  console.log('Article received:', article);
-  console.log('Article text type:', typeof article.text);
-  console.log('Article text content:', article.text);
+  console.log("Article received:", article);
+  console.log("Article text type:", typeof article.text);
+  console.log("Article text content:", article.text);
 
   const renderJsonContent = (jsonText: string) => {
     try {
       const parsedData = JSON.parse(jsonText);
-      console.log('Successfully parsed JSON:', parsedData);
-      return (
-        <JsonEditor 
-          data={parsedData}
-          viewOnly={true}
-          collapse={true}
-        />
-      );
+      console.log("Successfully parsed JSON:", parsedData);
+      return <JsonEditor data={parsedData} viewOnly={true} collapse={true} />;
     } catch (error) {
-      console.error('JSON Parse Error:', error);
-      console.log('Raw text that failed to parse:', jsonText.substring(0, 100) + '...');
+      console.error("JSON Parse Error:", error);
+      console.log(
+        "Raw text that failed to parse:",
+        jsonText.substring(0, 100) + "..."
+      );
       return <div>Error parsing JSON content</div>;
     }
   };
@@ -38,25 +35,26 @@ function ArticleContent({ article }: ArticleContentProps) {
   return (
     <div className="article-content">
       <div className="article-header">
-        <h1>{article.title || 'Untitled Article'}</h1>
+        <h1>{article.title || "Untitled Article"}</h1>
         <div className="article-meta">
           <span className="article-date">
-            {new Date(article.createdAt).toLocaleDateString('nl-NL', {
-              year: 'numeric',
-              month: 'long',
-              day: 'numeric'
+            {new Date(article.createdAt).toLocaleDateString("nl-NL", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
             })}
           </span>
         </div>
       </div>
       <div className="article-body">
-        {article.outputFormat === "json" 
-          ? renderJsonContent(article.text)
-          : <ReactMarkdown>{article.text || ''}</ReactMarkdown>
-        }
+        {article.outputFormat === "json" ? (
+          renderJsonContent(article.text)
+        ) : (
+          <ReactMarkdown>{article.text || ""}</ReactMarkdown>
+        )}
       </div>
     </div>
   );
 }
 
-export default ArticleContent; 
+export default ArticleContent;

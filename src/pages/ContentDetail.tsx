@@ -1,23 +1,14 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
-import { Article, fetchArticles } from '../services/api';
-import ArticleContent from '../components/ArticleContent';
-import Body from '../components/Body';
-import './ContentDetail.css';
-import { useUser } from '@clerk/clerk-react';
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { fetchArticle, RenderArticle } from "../services/api";
+import ArticleContent from "../components/ArticleContent";
+import Body from "../components/Body";
+import "./ContentDetail.css";
 
 function ContentDetail() {
-  const { user } = useUser();
-
-  if (!user) {
-    return <div>Please sign in to continue</div>
-  }
-
-  const userId = user.id;
-
   const { pagepath } = useParams<{ pagepath: string }>();
   const navigate = useNavigate();
-  const [article, setArticle] = useState<Article | null>(null);
+  const [article, setArticle] = useState<RenderArticle | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -26,43 +17,28 @@ function ContentDetail() {
       try {
         setLoading(true);
         if (!pagepath) {
-          throw new Error('No pagepath provided');
+          throw new Error("No pagepath provided");
         }
-        
-        const response = await fetchArticles(userId as string);
-        // Zoek het content calendar item en het bijbehorende artikel
-        let foundArticle: Article | undefined;
-        let parentTitle: string | undefined;
-        
-        for (const item of response.publishedContentCalendarItems) {
-          const article = item.articles.find(a => a.pagepath === pagepath);
-          if (article) {
-            foundArticle = article;
-            parentTitle = item.title; // Sla de titel van het parent item op
-            break;
-          }
+
+        const article = await fetchArticle(pagepath);
+
+        if (!article) {
+          throw new Error("Article not found");
         }
-        
-        if (!foundArticle) {
-          throw new Error('Article not found');
-        }
-        
+
         // Voeg de titel toe aan het artikel object
-        setArticle({
-          ...foundArticle,
-          title: parentTitle // Voeg de titel toe aan het artikel
-        });
+        setArticle(article);
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'An error occurred');
+        setError(err instanceof Error ? err.message : "An error occurred");
         // Optionally redirect to home page after a delay
-        setTimeout(() => navigate('/'), 3000);
+        // setTimeout(() => navigate("/"), 3000);
       } finally {
         setLoading(false);
       }
     };
-    
+
     loadArticle();
-  }, [pagepath, navigate, userId]);
+  }, [pagepath, navigate]);
 
   if (loading) {
     return (
@@ -93,7 +69,7 @@ function ContentDetail() {
           <div className="content-detail-not-found">
             <h2>Article Not Found</h2>
             <p>The article you're looking for doesn't exist.</p>
-            <button onClick={() => navigate('/')}>Return to Home</button>
+            <button onClick={() => navigate("/")}>Return to Home</button>
           </div>
         )}
       </div>
