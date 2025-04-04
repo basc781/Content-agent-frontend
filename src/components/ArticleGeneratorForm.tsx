@@ -6,17 +6,15 @@ import { FiLoader } from "react-icons/fi";
 import { useUser } from "@clerk/clerk-react";
 import { Module } from "../types/module";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { FormSchema } from "../types/type";
 
 interface FormInputs {
+  [key: string]: any;  // Dynamic fields from schema
+  // Special fields that remain static
   titel: string;
-  event: string;
-  beschrijving: string;
-  potentialKeywords: string;
-  datum: string;
-  winkelvoorbeelden: string;
-  productDatabase: boolean;
   website: string;
   imageUrls: string;
+  productDatabase: boolean;
 }
 
 interface ValidationResponse {
@@ -26,7 +24,7 @@ interface ValidationResponse {
   };
 }
 
-function ArticleGeneratorForm({ module }: { module: Module }) {
+function ArticleGeneratorForm({ module, formSchema }: { module: Module; formSchema: FormSchema }) {
   const { user } = useUser();
   const {
     register,
@@ -35,14 +33,12 @@ function ArticleGeneratorForm({ module }: { module: Module }) {
     formState: { errors },
   } = useForm<FormInputs>({
     defaultValues: {
+      // Special fields
       titel: "",
-      beschrijving: "",
-      potentialKeywords: "",
-      datum: "",
-      winkelvoorbeelden: "",
-      productDatabase: true,
       website: "",
       imageUrls: "",
+      productDatabase: true,
+      // Dynamic fields will be handled by the form
     },
   });
 
@@ -89,19 +85,20 @@ function ArticleGeneratorForm({ module }: { module: Module }) {
   return (
     <div className="article-generator">
       <div className="component-header">
-        <h2>{module.title}</h2>
+        <h2>{formSchema.titel || module.title}</h2>
         <p>{module.description}</p>
       </div>
 
       {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit(onSubmit)}>
+        {/* Title field - always present */}
         <div className="form-group">
-          <label htmlFor="titel">Title</label>
+          <label htmlFor="titel">TITEL</label>
           <input
             type="text"
             id="titel"
             {...register("titel", { required: true })}
-            placeholder="Enter article title"
+            placeholder="Voer titel in"
             disabled={isLoading}
           />
           {errors.titel && (
@@ -109,49 +106,34 @@ function ArticleGeneratorForm({ module }: { module: Module }) {
           )}
         </div>
 
-        <div className="form-group">
-          <label htmlFor="beschrijving">Description</label>
-          <textarea
-            id="beschrijving"
-            {...register("beschrijving", { required: true })}
-            placeholder="Enter description"
-            rows={4}
-            disabled={isLoading}
-          />
-          {errors.beschrijving && (
-            <span className="error">This field is required</span>
-          )}
-        </div>
-
-        <div className="form-row">
-          <div className="form-group">
-            <label htmlFor="potentialKeywords">Keywords</label>
-            <input
-              type="text"
-              id="potentialKeywords"
-              {...register("potentialKeywords", { required: true })}
-              placeholder="Enter keywords (comma separated)"
-              disabled={isLoading}
-            />
-            {errors.potentialKeywords && (
+        {/* Dynamic form fields from schema */}
+        {formSchema.fields.map((field) => (
+          <div key={field.id} className={field.type === 'date' ? 'form-row' : 'form-group'}>
+            <label htmlFor={field.id}>{field.label}</label>
+            {field.type === 'textarea' ? (
+              <textarea
+                id={field.id}
+                {...register(field.id, { required: field.required })}
+                placeholder={field.placeholder}
+                rows={4}
+                disabled={isLoading}
+              />
+            ) : (
+              <input
+                type={field.type}
+                id={field.id}
+                {...register(field.id, { required: field.required })}
+                placeholder={field.placeholder}
+                disabled={isLoading}
+              />
+            )}
+            {errors[field.id] && (
               <span className="error">This field is required</span>
             )}
           </div>
+        ))}
 
-          <div className="form-group">
-            <label htmlFor="datum">Date</label>
-            <input
-              type="date"
-              id="datum"
-              {...register("datum", { required: true })}
-              disabled={isLoading}
-            />
-            {errors.datum && (
-              <span className="error">This field is required</span>
-            )}
-          </div>
-        </div>
-
+        {/* Special fields that remain static */}
         {module.webScraper && (
           <div className="form-group">
             <label htmlFor="website">Website (sitemap.xml)</label>
@@ -183,9 +165,7 @@ function ArticleGeneratorForm({ module }: { module: Module }) {
             <div className="toggle-switch">
               <button
                 type="button"
-                className={`toggle-button ${
-                  watch("productDatabase") ? "active" : ""
-                }`}
+                className={`toggle-button ${watch("productDatabase") ? "active" : ""}`}
                 onClick={() => {
                   const currentValue = watch("productDatabase");
                   register("productDatabase").onChange({
@@ -211,7 +191,7 @@ function ArticleGeneratorForm({ module }: { module: Module }) {
               Aan het valideren, dit kan even duren...
             </>
           ) : (
-            "Generate Article"
+            formSchema.submitLabel || "Generate Article"
           )}
         </button>
       </form>

@@ -14,4 +14,5 @@ export type Module = {
   productAPI: boolean;
   updatedAt: Date;
   createdAt: Date;
+  orgModuleAccess: any;
 };

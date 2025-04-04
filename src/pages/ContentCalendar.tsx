@@ -5,9 +5,9 @@ import { useOrganization } from "@clerk/clerk-react";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getModule } from "../services/api";
-import { Module } from "../types/module";
+import { Module } from "../types/module"
 
-function ContentCalendar() {
+function ContentCalendar() {  
   const { slug } = useParams<{ slug: string }>();
   const { organization } = useOrganization();
 
@@ -17,6 +17,7 @@ function ContentCalendar() {
     const fetchModule = async () => {
       const module = await getModule(slug ?? "");
       setModule(module);
+      console.log("Dit is de module", module);
     };
     fetchModule();
   }, [slug]);
@@ -37,7 +38,10 @@ function ContentCalendar() {
     <div>
       <div className="content-calendar-container">
         <div className="form-container">
-          <ArticleGeneratorForm module={module} />
+          <ArticleGeneratorForm 
+            module={module} 
+            formSchema={module.orgModuleAccess[0].formSchema.schema} 
+          />
         </div>
         <div className="table-container">
           <CalendarOverview moduleId={module.id.toString()} />
