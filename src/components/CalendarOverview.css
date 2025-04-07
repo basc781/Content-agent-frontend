@@ -58,6 +58,11 @@
   color: #B7791F;
 }
 
+.status-failed {
+  background-color: #FED7D7;
+  color: #C53030;
+}
+
 .status-badge.status-writing\.\.\.\. {
   background-color: #EBF8FF;
   color: #3182CE;
