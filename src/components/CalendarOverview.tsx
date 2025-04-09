@@ -60,7 +60,7 @@ function CalendarOverview({ moduleId }: { moduleId: string }) {
     //Set up automatic refresh every 10 seconds
     const refreshInterval = setInterval(() => {
       loadArticles();
-    }, 60000);
+    }, 10000);
 
     // Clean up interval on component unmount
     return () => clearInterval(refreshInterval);
