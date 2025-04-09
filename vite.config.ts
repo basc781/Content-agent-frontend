@@ -18,6 +18,7 @@ export default defineConfig({
       "content-agent.nl",
       "www.content-agent.nl",
       "content-agent-beta.trezma.com",
+      "dev.content-agent.nl"
     ],
   },
 });

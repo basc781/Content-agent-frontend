@@ -136,7 +136,7 @@ function ArticleGeneratorForm({ module, formSchema }: { module: Module; formSche
         {/* Special fields that remain static */}
         {module.webScraper && (
           <div className="form-group">
-            <label htmlFor="website">Website (sitemap.xml)</label>
+            <label htmlFor="website">Website</label>
             <input
               type="text"
               id="website"

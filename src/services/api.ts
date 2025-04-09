@@ -198,3 +198,16 @@ export const getModule = async (slug: string): Promise<Module> => {
   console.log("Module:", data.module);
   return data.module;
 };
+
+export const deleteArticle = async (id: number) => {
+  const token = await GetAuthToken();
+
+  const response = await fetch(`${baseURL}/content/${id}`, {
+    method: "DELETE",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  if (!response.ok) throw new Error("Failed to delete article");
+  return await response.json();
+};

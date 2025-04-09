@@ -4,7 +4,7 @@ import { Article, fetchArticles } from "../services/api";
 import { FiRefreshCw } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
-
+import { deleteArticle } from "../services/api";
 // Nieuwe interface voor de aangepaste datastructuur
 interface ContentCalendarItem {
   id: number;
@@ -13,7 +13,6 @@ interface ContentCalendarItem {
   dateCreated: string;
   formData: {
     datum: string;
-    event: string;
     titel: string;
     beschrijving: string;
     potentialKeywords: string;
@@ -45,13 +44,23 @@ function CalendarOverview({ moduleId }: { moduleId: string }) {
     }
   };
 
+  const handleDelete = async (id: number) => {
+    try {
+      await deleteArticle(id);
+      await loadArticles();
+    } catch (err) {
+      console.error("Error deleting article:", err);
+      setError(err instanceof Error ? err.message : "An error occurred while deleting");
+    }
+  };
+
   useEffect(() => {
     loadArticles();
 
     //Set up automatic refresh every 10 seconds
     const refreshInterval = setInterval(() => {
       loadArticles();
-    }, 60000);
+    }, 10000);
 
     // Clean up interval on component unmount
     return () => clearInterval(refreshInterval);
@@ -99,6 +108,21 @@ function CalendarOverview({ moduleId }: { moduleId: string }) {
     }).format(date);
   };
 
+  const formatTime = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat("nl-NL", {
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  };
+
+  // Helper function to calculate expected article time (20 mins after creation)
+  const getExpectedArticleTime = (dateCreated: string) => {
+    const date = new Date(dateCreated);
+    date.setMinutes(date.getMinutes() + 20);
+    return formatTime(date.toISOString());
+  };
+
   console.log(contentItems);
 
   return (
@@ -124,7 +148,6 @@ function CalendarOverview({ moduleId }: { moduleId: string }) {
             <th>Title</th>
             <th>Status</th>
             <th>Date</th>
-            <th>Event</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -144,7 +167,6 @@ function CalendarOverview({ moduleId }: { moduleId: string }) {
                 <td>
                   {item.dateCreated ? formatDate(item.dateCreated) : "N/A"}
                 </td>
-                <td>{item.formData.event || "N/A"}</td>
                 <td>
                   {latestArticle && latestArticle.pagepath ? (
                     <Link
@@ -153,8 +175,17 @@ function CalendarOverview({ moduleId }: { moduleId: string }) {
                     >
                       View Article
                     </Link>
+                  ) : item.status === "Failed" ? (
+                    <button
+                      className="view-article-link delete-button"
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      Delete
+                    </button>
                   ) : (
-                    <span className="no-article">No article available</span>
+                    <span className="no-article">
+                      Article expected to be available at {getExpectedArticleTime(item.dateCreated)}
+                    </span>
                   )}
                 </td>
               </tr>
