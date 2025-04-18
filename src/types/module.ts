@@ -1,7 +1,9 @@
-export type ModuleHeader = {
+export interface ModuleHeader {
+  id: number;
   name: string;
   slug: string;
-};
+  accessId?: string;
+}
 
 export type Module = {
   id: number;
