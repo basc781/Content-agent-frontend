@@ -6,18 +6,23 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getModule } from "../services/api";
 import { Module } from "../types/module"
+import { useUser } from "@clerk/clerk-react";
 
 function ContentCalendar() {  
+  const { user } = useUser();
+  console.log("Dit is de user", user);
   const { slug } = useParams<{ slug: string }>();
   const { organization } = useOrganization();
+  console.log("Dit is de organization", organization);
 
   const [module, setModule] = useState<Module | null>(null);
 
   useEffect(() => {
     const fetchModule = async () => {
       const module = await getModule(slug ?? "");
+      console.log("DIT IS ALTIJD HET GETAL DAT JE NODIG HEBT", module.orgModuleAccess[0].id);
       setModule(module);
-      console.log("Dit is de module", module);
+      
     };
     fetchModule();
   }, [slug]);

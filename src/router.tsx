@@ -2,7 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import ContentCalendar from "./pages/ContentCalendar";
 import ContentDetail from "./pages/ContentDetail";
 import App from "./App";
-
+import Settings from "./pages/Settings";
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -20,6 +20,11 @@ export const router = createBrowserRouter([
         path: "/module/:slug",
         element: <ContentCalendar />,
       },
+      {
+        path: "/settings",
+        element: <Settings />,
+      },
+
     ],
   },
 ]);

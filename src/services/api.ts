@@ -10,6 +10,15 @@ declare global {
   }
 }
 
+export interface imagePayload {
+  images: {
+    file: File;
+    filename: string;
+    uniqueFilename: string;
+    contentType: string;
+  }[];
+}
+
 interface ValidationResponse {
   formDataValidation: {
     valid: boolean;
@@ -55,6 +64,27 @@ export interface ContentCalendarItem {
 
 interface ArticlesResponse {
   publishedContentCalendarItems: ContentCalendarItem[];
+}
+
+export interface imagesWithAuthenticatedUrls {
+  contentType: string;
+  filename: string;
+  uniqueFilename: string;
+  authenticatedUrl: string;
+}
+
+interface authenticatedUrls {
+  images: imagesWithAuthenticatedUrls[];
+}
+
+export interface imagesWithDescription {
+  images: {
+    contentType: string;
+    filename: string;
+    uniqueFilename: string;
+    authenticatedUrl: string;
+    description: string;
+  }[];
 }
 
 const baseURL = import.meta.env.VITE_API_URL;
@@ -186,7 +216,7 @@ export const getOrganizationModules = async (): Promise<ModuleHeader[]> => {
 
 export const getModule = async (slug: string): Promise<Module> => {
   const token = await GetAuthToken();
-
+  console.log("WORD DEZE GETRIGGERED NU");
   const response = await fetch(`${baseURL}/modules/${slug}`, {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -210,4 +240,60 @@ export const deleteArticle = async (id: number) => {
   });
   if (!response.ok) throw new Error("Failed to delete article");
   return await response.json();
+};
+
+export const uploadImages = async (images: imagePayload, accessId: string): Promise<imagesWithDescription> => {
+  const token = await GetAuthToken();
+  const response = await fetch(`${baseURL}/images/get-upload-urls`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      images: images.images.map(img => ({
+        filename: img.filename,
+        uniqueFilename: img.uniqueFilename,
+        contentType: img.file.type
+      })),
+      accessId
+    })
+  });
+  if (!response.ok) throw new Error("Failed to get upload URLs");
+
+  const data: authenticatedUrls = await response.json();
+
+  // Upload each image to its authenticated URL
+  for (const image of data.images) {
+    const originalImage = images.images.find(img => img.filename === image.filename);
+    
+    if (!originalImage) {
+      throw new Error(`Could not find original image data for ${image.filename}`);
+    }
+
+    const uploadResponse = await fetch(image.authenticatedUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": image.contentType
+      },
+      body: originalImage.file,
+    });
+
+    if (!uploadResponse.ok) throw new Error(`Failed to upload image ${image.filename}`);
+  }
+
+  const getImagesWithMetadata = await fetch(`${baseURL}/images/generate-metadata`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ images: data.images, accessId }),
+  });
+
+  if (!getImagesWithMetadata.ok) throw new Error("Failed to generate metadata");
+
+  const imagesWithMetadata: imagesWithDescription = await getImagesWithMetadata.json();
+  console.log("All images uploaded successfully",imagesWithMetadata);
+  return imagesWithMetadata;
 };
