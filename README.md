@@ -1,50 +1,69 @@
-# React + TypeScript + Vite
+# Content Agent Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern web application for content management, image uploads, and module-based content generation.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **User Authentication**: Secure authentication using Clerk
+- **Organization Management**: Multi-tenant support with organization-specific content
+- **Image Management**: Upload and manage images with automatic metadata generation
+- **Content Generation**: Create and manage content with AI assistance
+- **Module System**: Organize content by modules with customizable settings
+- **Content Calendar**: Schedule and track content creation
 
-## Expanding the ESLint configuration
+## Getting Started
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Prerequisites
 
-- Configure the top-level `parserOptions` property like this:
+- Node.js (v14 or higher)
+- npm or yarn
+- A Clerk account for authentication
+- Access to the Content Agent API
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+### Installation
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/content-agent-frontend.git
+   cd content-agent-frontend
+   ```
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+2. Install dependencies:
+   ```
+   npm install
+   # or
+   yarn install
+   ```
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+3. Create a `.env` file in the root directory with the following variables:
+   ```
+   VITE_API_URL=your_api_url
+   VITE_R2_PUBLIC_URL=your_r2_public_url
+   ```
+
+4. Start the development server:
+   ```
+   npm run dev
+   # or
+   yarn dev
+   ```
+
+## Project Structure
+
+- `src/components/`: Reusable UI components
+- `src/pages/`: Page components for different routes
+- `src/services/`: API services and data fetching logic
+- `src/types/`: TypeScript type definitions
+- `src/utils/`: Utility functions
+
+## Technologies Used
+
+- React
+- TypeScript
+- Clerk for authentication
+- React Router for navigation
+- React Dropzone for file uploads
+
+## License
+
+[MIT](LICENSE)
