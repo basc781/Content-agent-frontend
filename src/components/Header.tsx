@@ -27,7 +27,7 @@ export default function Header({
     membership => membership.organization.id === organization.id && membership.role === "org:admin"
   );
   console.log("Is user admin in this organization:", isAdmin);
-
+  
   useEffect(() => {
     const fetchModules = async () => {
       const modules = await getOrganizationModules();
