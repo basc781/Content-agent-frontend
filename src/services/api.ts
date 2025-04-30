@@ -258,7 +258,6 @@ export const uploadImages = async (images: imagePayload, accessId: string): Prom
     console.log(`Processing batch ${currentBatch} of ${totalBatches}`);
 
     console.log("Processing batch:", currentBatch);
-    await new Promise(resolve => setTimeout(resolve, 10000));
 
     const imageBatch = images.images.slice(i, i + BATCH_SIZE);
 
