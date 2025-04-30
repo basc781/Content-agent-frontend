@@ -243,57 +243,77 @@ export const deleteArticle = async (id: number) => {
 };
 
 export const uploadImages = async (images: imagePayload, accessId: string): Promise<imagesWithDescription> => {
-  const token = await GetAuthToken();
-  const response = await fetch(`${baseURL}/images/get-upload-urls`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      images: images.images.map(img => ({
-        filename: img.filename,
-        uniqueFilename: img.uniqueFilename,
-        contentType: img.file.type
-      })),
-      accessId
-    })
-  });
-  if (!response.ok) throw new Error("Failed to get upload URLs");
+  
+  const BATCH_SIZE = 10;
+  let allUploadedImages: imagesWithAuthenticatedUrls[] = [];
+  let allImagesWithMetadata: imagesWithDescription = { images: [] };
 
-  const data: authenticatedUrls = await response.json();
+  // Process images in batches
+  for (let i = 0; i < images.images.length; i += BATCH_SIZE) {
+    const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
+    const totalBatches = Math.ceil(images.images.length / BATCH_SIZE);
+    console.log(`Processing batch ${currentBatch} of ${totalBatches}`);
 
-  // Upload each image to its authenticated URL
-  for (const image of data.images) {
-    const originalImage = images.images.find(img => img.filename === image.filename);
-    
-    if (!originalImage) {
-      throw new Error(`Could not find original image data for ${image.filename}`);
+    const imageBatch = images.images.slice(i, i + BATCH_SIZE);
+
+    const token = await GetAuthToken();
+    // Get upload URLs for batch
+    const response = await fetch(`${baseURL}/images/get-upload-urls`, {
+      method: "POST", 
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        images: imageBatch.map(img => ({
+          filename: img.filename,
+          uniqueFilename: img.uniqueFilename,
+          contentType: img.file.type
+        })),
+        accessId
+      })
+    });
+    if (!response.ok) throw new Error("Failed to get upload URLs");
+
+    const data: authenticatedUrls = await response.json();
+
+    // Upload each image in batch to its authenticated URL
+    for (const image of data.images) {
+      const originalImage = imageBatch.find(img => img.filename === image.filename);
+      
+      if (!originalImage) {
+        throw new Error(`Could not find original image data for ${image.filename}`);
+      }
+
+      const uploadResponse = await fetch(image.authenticatedUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": image.contentType
+        },
+        body: originalImage.file,
+      });
+
+      if (!uploadResponse.ok) throw new Error(`Failed to upload image ${image.filename}`);
     }
 
-    const uploadResponse = await fetch(image.authenticatedUrl, {
-      method: "PUT",
+    allUploadedImages = [...allUploadedImages, ...data.images];
+
+    // Generate metadata for batch
+    const getImagesWithMetadata = await fetch(`${baseURL}/images/generate-metadata`, {
+      method: "POST",
       headers: {
-        "Content-Type": image.contentType
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
-      body: originalImage.file,
+      body: JSON.stringify({ images: data.images, accessId }),
     });
 
-    if (!uploadResponse.ok) throw new Error(`Failed to upload image ${image.filename}`);
+    if (!getImagesWithMetadata.ok) throw new Error("Failed to generate metadata");
+
+    const batchMetadata: imagesWithDescription = await getImagesWithMetadata.json();
+    allImagesWithMetadata.images = [...allImagesWithMetadata.images, ...batchMetadata.images];
   }
 
-  const getImagesWithMetadata = await fetch(`${baseURL}/images/generate-metadata`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ images: data.images, accessId }),
-  });
-
-  if (!getImagesWithMetadata.ok) throw new Error("Failed to generate metadata");
-
-  const imagesWithMetadata: imagesWithDescription = await getImagesWithMetadata.json();
-  console.log("All images uploaded successfully",imagesWithMetadata);
-  return imagesWithMetadata;
+  console.log("All images uploaded successfully", allImagesWithMetadata);
+  return allImagesWithMetadata;
 };
