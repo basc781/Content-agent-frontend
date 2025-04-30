@@ -233,7 +233,7 @@ function Settings() {
               <div className="upload-success">
                 <p>Images uploaded successfully!</p>
                 <div className="uploaded-images-list">
-                  {uploadedImages.images.map((image) => (
+                  {uploadedImages.images.slice(0, 30).map((image) => (
                     <div key={image.filename} className="uploaded-image-item">
                       <img 
                         src={`${import.meta.env.VITE_R2_PUBLIC_URL}/${image.uniqueFilename}`}
