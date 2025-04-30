@@ -77,16 +77,6 @@ interface authenticatedUrls {
   images: imagesWithAuthenticatedUrls[];
 }
 
-export interface imagesWithDescription {
-  images: {
-    contentType: string;
-    filename: string;
-    uniqueFilename: string;
-    authenticatedUrl: string;
-    description: string;
-  }[];
-}
-
 const baseURL = import.meta.env.VITE_API_URL;
 
 const GetAuthToken = async () => {
@@ -242,83 +232,65 @@ export const deleteArticle = async (id: number) => {
   return await response.json();
 };
 
-export const uploadImages = async (images: imagePayload, accessId: string): Promise<imagesWithDescription> => {
+export const uploadImages = async (images: imagePayload, accessId: string): Promise<string> => {
   
-  const BATCH_SIZE = 10;
   let allUploadedImages: imagesWithAuthenticatedUrls[] = [];
-  let allImagesWithMetadata: imagesWithDescription = { images: [] };
 
   console.log("Uploading images:", images);
-  await new Promise(resolve => setTimeout(resolve, 10000));
 
-  // Process images in batches
-  for (let i = 0; i < images.images.length; i += BATCH_SIZE) {
-    const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
-    const totalBatches = Math.ceil(images.images.length / BATCH_SIZE);
-    console.log(`Processing batch ${currentBatch} of ${totalBatches}`);
+  const token = await GetAuthToken();
+  // Get upload URLs for all images
+  const response = await fetch(`${baseURL}/images/get-upload-urls`, {
+    method: "POST", 
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      images: images.images.map(img => ({
+        filename: img.filename,
+        uniqueFilename: img.uniqueFilename,
+        contentType: img.file.type
+      })),
+      accessId
+    })
+  });
+  if (!response.ok) throw new Error("Failed to get upload URLs");
 
-    console.log("Processing batch:", currentBatch);
+  const data: authenticatedUrls = await response.json();
 
-    const imageBatch = images.images.slice(i, i + BATCH_SIZE);
-
-    const token = await GetAuthToken();
-    // Get upload URLs for batch
-    const response = await fetch(`${baseURL}/images/get-upload-urls`, {
-      method: "POST", 
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        images: imageBatch.map(img => ({
-          filename: img.filename,
-          uniqueFilename: img.uniqueFilename,
-          contentType: img.file.type
-        })),
-        accessId
-      })
-    });
-    if (!response.ok) throw new Error("Failed to get upload URLs");
-
-    const data: authenticatedUrls = await response.json();
-
-    // Upload each image in batch to its authenticated URL
-    for (const image of data.images) {
-      const originalImage = imageBatch.find(img => img.filename === image.filename);
-      
-      if (!originalImage) {
-        throw new Error(`Could not find original image data for ${image.filename}`);
-      }
-
-      const uploadResponse = await fetch(image.authenticatedUrl, {
-        method: "PUT",
-        headers: {
-          "Content-Type": image.contentType
-        },
-        body: originalImage.file,
-      });
-
-      if (!uploadResponse.ok) throw new Error(`Failed to upload image ${image.filename}`);
+  // Upload all images to their authenticated URLs
+  for (const image of data.images) {
+    const originalImage = images.images.find(img => img.filename === image.filename);
+    
+    if (!originalImage) {
+      throw new Error(`Could not find original image data for ${image.filename}`);
     }
 
-    allUploadedImages = [...allUploadedImages, ...data.images];
-
-    // Generate metadata for batch
-    const getImagesWithMetadata = await fetch(`${baseURL}/images/generate-metadata`, {
-      method: "POST",
+    const uploadResponse = await fetch(image.authenticatedUrl, {
+      method: "PUT",
       headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
+        "Content-Type": image.contentType
       },
-      body: JSON.stringify({ images: data.images, accessId }),
+      body: originalImage.file,
     });
 
-    if (!getImagesWithMetadata.ok) throw new Error("Failed to generate metadata");
-
-    const batchMetadata: imagesWithDescription = await getImagesWithMetadata.json();
-    allImagesWithMetadata.images = [...allImagesWithMetadata.images, ...batchMetadata.images];
+    if (!uploadResponse.ok) throw new Error(`Failed to upload image ${image.filename}`);
   }
 
-  console.log("All images uploaded successfully", allImagesWithMetadata);
-  return allImagesWithMetadata;
+  allUploadedImages = [...allUploadedImages, ...data.images];
+
+  // Trigger metadata generation but don't wait for result
+  fetch(`${baseURL}/images/generate-metadata`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ images: data.images, accessId }),
+  });
+
+  // Return empty metadata array since generation will happen asynchronously
+  console.log("All images uploaded successfully");
+  return "All images uploaded successfully";
 };

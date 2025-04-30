@@ -3,7 +3,6 @@ import { useOrganization } from "@clerk/clerk-react";
 import { useUser } from "@clerk/clerk-react";
 import { useNavigate } from "react-router-dom";
 import { useDropzone } from "react-dropzone";
-import { imagesWithDescription } from "../services/api";
 import Body from "../components/Body";
 import { uploadImages, getOrganizationModules, imagePayload } from "../services/api";
 import "./Settings.css";
@@ -16,7 +15,6 @@ function Settings() {
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [uploading, setUploading] = useState(false);
   const [uploadSuccess, setUploadSuccess] = useState(false);
-  const [uploadedImages, setUploadedImages] = useState<imagesWithDescription>({images: []});
   const [error, setError] = useState<string | null>(null);
   const [modules, setModules] = useState<ModuleHeader[]>([]);
   const [selectedModuleId, setSelectedModuleId] = useState<number | null>(null);
@@ -84,7 +82,6 @@ function Settings() {
     setError(null);
     
     try {
-      // Create a single object with an images array
       const imageRequest: imagePayload = {
         images: uploadedFiles.map(file => ({
           file: file,
@@ -94,11 +91,7 @@ function Settings() {
         }))
       };
       
-
-      console.log("Dit is de imageRequest die we echt doen",imageRequest)
-      
-      const response = await uploadImages(imageRequest, modules[0].accessId || "");
-      setUploadedImages(response);
+      await uploadImages(imageRequest, modules[0].accessId || "");
       setUploadSuccess(true);
       setUploadedFiles([]);
     } catch (err) {
@@ -231,21 +224,7 @@ function Settings() {
             {error && <div className="upload-error">{error}</div>}
             {uploadSuccess && (
               <div className="upload-success">
-                <p>Images uploaded successfully!</p>
-                <div className="uploaded-images-list">
-                  {uploadedImages.images.slice(0, 30).map((image) => (
-                    <div key={image.filename} className="uploaded-image-item">
-                      <img 
-                        src={`${import.meta.env.VITE_R2_PUBLIC_URL}/${image.uniqueFilename}`}
-                        alt={image.description} 
-                        className="uploaded-image-thumbnail" 
-                      />
-                      <div className="uploaded-image-info">
-                        <p className="uploaded-image-description">{image.description}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                <p>Images uploaded successfully! It takes up to a few hours for them to be available for use in your content.</p>
               </div>
             )}
             
