@@ -248,11 +248,17 @@ export const uploadImages = async (images: imagePayload, accessId: string): Prom
   let allUploadedImages: imagesWithAuthenticatedUrls[] = [];
   let allImagesWithMetadata: imagesWithDescription = { images: [] };
 
+  console.log("Uploading images:", images);
+  await new Promise(resolve => setTimeout(resolve, 10000));
+
   // Process images in batches
   for (let i = 0; i < images.images.length; i += BATCH_SIZE) {
     const currentBatch = Math.floor(i / BATCH_SIZE) + 1;
     const totalBatches = Math.ceil(images.images.length / BATCH_SIZE);
     console.log(`Processing batch ${currentBatch} of ${totalBatches}`);
+
+    console.log("Processing batch:", currentBatch);
+    await new Promise(resolve => setTimeout(resolve, 10000));
 
     const imageBatch = images.images.slice(i, i + BATCH_SIZE);
 
