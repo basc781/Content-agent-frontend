@@ -267,8 +267,9 @@ export const uploadImages = async (images: imagePayload, accessId: string): Prom
       throw new Error(`Could not find original image data for ${image.filename}`);
     }
 
-    const uploadResponse = await fetch(image.authenticatedUrl, {
-      method: "PUT",
+    try {
+      const uploadResponse = await fetch(image.authenticatedUrl, {
+        method: "PUT",
       headers: {
         "Content-Type": image.contentType
       },
@@ -276,6 +277,10 @@ export const uploadImages = async (images: imagePayload, accessId: string): Prom
     });
 
     if (!uploadResponse.ok) throw new Error(`Failed to upload image ${image.filename}`);
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      continue;
+    }
   }
 
   allUploadedImages = [...allUploadedImages, ...data.images];
