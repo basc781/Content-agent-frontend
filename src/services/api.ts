@@ -285,11 +285,12 @@ export const uploadImages = async (images: imagePayload, accessId: string): Prom
 
   allUploadedImages = [...allUploadedImages, ...data.images];
 
+  const tokenMetadata = await GetAuthToken();
   // Trigger metadata generation but don't wait for result
   fetch(`${baseURL}/images/generate-metadata`, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${tokenMetadata}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({ images: data.images, accessId }),
