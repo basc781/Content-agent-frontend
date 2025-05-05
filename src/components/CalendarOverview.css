@@ -10,6 +10,39 @@
   border-collapse: separate;
   border-spacing: 0;
   margin-top: 20px;
+  table-layout: fixed;
+  flex: 0;
+}
+
+.calendar-overview th,
+.calendar-overview td {
+  height: 20px;
+  padding: 8px 16px;
+  vertical-align: middle;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar-overview th:nth-child(1),
+.calendar-overview td:nth-child(1) {
+  width: 40%;
+}
+
+.calendar-overview th:nth-child(2),
+.calendar-overview td:nth-child(2) {
+  width: 15%;
+}
+
+.calendar-overview th:nth-child(3),
+.calendar-overview td:nth-child(3) {
+  width: 15%;
+}
+
+.calendar-overview th:nth-child(4),
+.calendar-overview td:nth-child(4) {
+  width: 15%;
+  text-align: center;
 }
 
 .calendar-overview th {
@@ -38,7 +71,7 @@
 
 .status-badge {
   padding: 6px 12px;
-  border-radius: 20px;
+  border-radius: 4px;
   font-size: 13px;
   font-weight: 500;
 }
@@ -70,8 +103,19 @@
 
 .no-article {
   color: #A0AEC0;
-  font-style: italic;
+  background-color: #FED7D7;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 4px;
   font-size: 13px;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.no-article:not([title]) {
+  color: #C53030;
+  font-style: normal;
 }
 
 .refresh-button {
@@ -87,7 +131,8 @@
 }
 
 .view-article-link {
-  display: inline-block;
+  align-items: center;
+  justify-content: center;
   padding: 6px 12px;
   background-color: #EBF8FF;
   color: #3182CE;
@@ -100,4 +145,68 @@
 .view-article-link:hover {
   background-color: #BEE3F8;
   transform: translateY(-1px);
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 20px;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.edit-mode-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.edit-mode-button:hover {
+  background-color: #edf2f7;
+}
+
+.edit-mode-button.active {
+  background-color: #ebf8ff;
+  border-color: #3182ce;
+  color: #3182ce;
+}
+
+.edit-icon {
+  width: 16px;
+  height: 16px;
+}
+.delete-button {
+  display: inline-flex;
+  height: 20px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background-color: #fff5f5;
+  color: #c53030;
+  border: 1px solid #fed7d7;
+  border-radius: 4px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.delete-button:hover {
+  background-color: #fed7d7;
+  transform: translateY(-1px);
+}
+
+.delete-icon {
+  width: 14px;
+  height: 14px;
 }

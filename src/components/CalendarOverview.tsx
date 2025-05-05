@@ -1,7 +1,7 @@
 import "./CalendarOverview.css";
 import { useState, useEffect } from "react";
 import { Article, fetchArticles } from "../services/api";
-import { FiRefreshCw } from "react-icons/fi";
+import { FiRefreshCw, FiEdit2, FiTrash2 } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import { useUser } from "@clerk/clerk-react";
 import { deleteArticle } from "../services/api";
@@ -26,6 +26,7 @@ function CalendarOverview({ moduleId }: { moduleId: string }) {
   const [contentItems, setContentItems] = useState<ContentCalendarItem[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const loadArticles = async () => {
     console.log("Starting to fetch articles");
@@ -133,14 +134,23 @@ function CalendarOverview({ moduleId }: { moduleId: string }) {
       </div>
 
       <div className="calendar-header">
-        <button
-          className={`refresh-button ${isRefreshing ? "refreshing" : ""}`}
-          onClick={handleRefresh}
-          disabled={isRefreshing}
-        >
-          <FiRefreshCw className="refresh-icon" />
-          Refresh
-        </button>
+        <div className="header-actions">
+          <button
+            className={`edit-mode-button ${isEditMode ? 'active' : ''}`}
+            onClick={() => setIsEditMode(!isEditMode)}
+          >
+            <FiEdit2 className="edit-icon" />
+            {isEditMode ? 'Exit Edit Mode' : 'Edit Mode'}
+          </button>
+          <button
+            className={`refresh-button ${isRefreshing ? "refreshing" : ""}`}
+            onClick={handleRefresh}
+            disabled={isRefreshing}
+          >
+            <FiRefreshCw className="refresh-icon" />
+            Refresh
+          </button>
+        </div>
       </div>
       <table>
         <thead>
@@ -156,7 +166,7 @@ function CalendarOverview({ moduleId }: { moduleId: string }) {
             const latestArticle = getLatestArticle(item);
             return (
               <tr key={item.id}>
-                <td>{item.title}</td>
+                <td title={item.title}>{item.title}</td>
                 <td>
                   <span
                     className={`status-badge status-${item.status.toLowerCase()}`}
@@ -164,11 +174,19 @@ function CalendarOverview({ moduleId }: { moduleId: string }) {
                     {item.status}
                   </span>
                 </td>
-                <td>
+                <td title={item.dateCreated ? formatDate(item.dateCreated) : "N/A"}>
                   {item.dateCreated ? formatDate(item.dateCreated) : "N/A"}
                 </td>
                 <td>
-                  {latestArticle && latestArticle.pagepath ? (
+                  {isEditMode ? (
+                    <button
+                      className="delete-button"
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      <FiTrash2 className="delete-icon" />
+                      Delete
+                    </button>
+                  ) : latestArticle && latestArticle.pagepath ? (
                     <Link
                       to={`/article/${latestArticle.pagepath}`}
                       className="view-article-link"
@@ -176,15 +194,10 @@ function CalendarOverview({ moduleId }: { moduleId: string }) {
                       View Article
                     </Link>
                   ) : item.status === "Failed" ? (
-                    <button
-                      className="view-article-link delete-button"
-                      onClick={() => handleDelete(item.id)}
-                    >
-                      Delete
-                    </button>
+                    <span className="no-article">Failed</span>
                   ) : (
-                    <span className="no-article">
-                      Article expected to be available at {getExpectedArticleTime(item.dateCreated)}
+                    <span className="no-article" title={`Expected at ${getExpectedArticleTime(item.dateCreated)}`}>
+                      Expected at {getExpectedArticleTime(item.dateCreated)}
                     </span>
                   )}
                 </td>
