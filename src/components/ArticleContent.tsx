@@ -5,17 +5,14 @@ import { JsonEditor } from "json-edit-react";
 
 interface ArticleContentProps {
   article: RenderArticle;
+  outputFormat: string;
 }
 
-function ArticleContent({ article }: ArticleContentProps) {
+function ArticleContent({ article, outputFormat }: ArticleContentProps) {
   if (!article) {
     console.log("No article provided");
     return <div>No article data available</div>;
   }
-
-  console.log("Article received:", article);
-  console.log("Article text type:", typeof article.text);
-  console.log("Article text content:", article.text);
 
   const renderJsonContent = (jsonText: string) => {
     try {
@@ -32,10 +29,9 @@ function ArticleContent({ article }: ArticleContentProps) {
     }
   };
 
-  return (
+  if (outputFormat === "markdown") return (
     <div className="article-content">
       <div className="article-header">
-        <h1>{article.title || "Untitled Article"}</h1>
         <div className="article-meta">
           <span className="article-date">
             {new Date(article.createdAt).toLocaleDateString("nl-NL", {
@@ -51,6 +47,38 @@ function ArticleContent({ article }: ArticleContentProps) {
           renderJsonContent(article.text)
         ) : (
           <ReactMarkdown>{article.text || ""}</ReactMarkdown>
+        )}
+      </div>
+    </div>
+  );
+  if (outputFormat === "emailHTML") return (
+    <div className="article-content">
+      <div className="article-header">
+        <div className="article-meta">
+          <span className="article-date">
+            {new Date(article.createdAt).toLocaleDateString("nl-NL", {
+              year: "numeric",
+              month: "long", 
+              day: "numeric",
+            })}
+          </span>
+        </div>
+      </div>
+      <div className="article-body">
+        {article.outputFormat === "json" ? (
+          renderJsonContent(article.text)
+        ) : (
+          <iframe
+            srcDoc={article.text || ""}
+            style={{
+              width: "100%",
+              height: "800px", // You may want to adjust this
+              border: "none",
+              overflow: "auto"
+            }}
+            title="Email Preview"
+            sandbox="allow-same-origin"
+          />
         )}
       </div>
     </div>

@@ -17,4 +17,5 @@ export type Module = {
   updatedAt: Date;
   createdAt: Date;
   orgModuleAccess: any;
+  outputFormat: 'emailHTML' | 'json' | 'markdown';
 };

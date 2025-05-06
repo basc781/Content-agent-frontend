@@ -12,6 +12,7 @@ function ContentCalendar() {
   const { user } = useUser();
   console.log("Dit is de user", user);
   const { slug } = useParams<{ slug: string }>();
+  console.log('dit is de slugGGGG',slug)
   const { organization } = useOrganization();
   console.log("Dit is de organization", organization);
 
@@ -21,6 +22,7 @@ function ContentCalendar() {
     const fetchModule = async () => {
       const module = await getModule(slug ?? "");
       console.log("DIT IS ALTIJD HET GETAL DAT JE NODIG HEBT", module.orgModuleAccess[0].id);
+      console.log('dit is de module type',module.outputFormat)
       setModule(module);
       
     };

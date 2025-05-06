@@ -11,9 +11,13 @@ function ContentDetail() {
   const [article, setArticle] = useState<RenderArticle | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-
+  
+  
   useEffect(() => {
+
     const loadArticle = async () => {
+
+      console.log('HALOOOOO')
       try {
         setLoading(true);
         if (!pagepath) {
@@ -21,6 +25,8 @@ function ContentDetail() {
         }
 
         const article = await fetchArticle(pagepath);
+
+        console.log('dit is de article format',article.outputFormat)
 
         if (!article) {
           throw new Error("Article not found");
@@ -64,7 +70,7 @@ function ContentDetail() {
     <Body>
       <div className="content-detail">
         {article ? (
-          <ArticleContent article={article} />
+          <ArticleContent article={article} outputFormat={article.outputFormat} />
         ) : (
           <div className="content-detail-not-found">
             <h2>Article Not Found</h2>
